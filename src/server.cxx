@@ -1,8 +1,26 @@
+#include <string>
 #include <iostream>
-#include "../add/asio.hpp"
+#include <asio.hpp>
 
-int main(int argc, char const *argv[])
+constexpr int port = 8888; 
+
+using asio::ip::udp;
+
+int main()
 {
-    std::cout << "Hello, Server!" << std::endl;
+    asio::io_context io_context;
+    udp::socket socket(io_context, udp::endpoint(udp::v6(), port));
+
+    char buffer[1024]{};
+    udp::endpoint sender_endpoint;
+
+    while (true)
+    {
+        std::size_t bytes_received = socket.receive_from(asio::buffer(buffer), sender_endpoint);
+        std::cout << "Received: " << std::string(buffer, bytes_received) << " from " << sender_endpoint.address().to_string() << std::endl;
+
+        socket.send_to(asio::buffer(buffer, bytes_received), sender_endpoint);
+    }
+    
     return 0;
 }
