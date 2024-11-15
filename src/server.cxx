@@ -14,13 +14,14 @@ int main()
     char buffer[1024]{};
     udp::endpoint sender_endpoint;
 
-    while (true)
+    std::string message;
+    while (message != "exit")
     {
         std::size_t bytes_received = socket.receive_from(asio::buffer(buffer), sender_endpoint);
-        std::cout << "Received: " << std::string(buffer, bytes_received) << " from " << sender_endpoint.address().to_string() << std::endl;
-
+        message = std::string(buffer, bytes_received);
+        std::cout << "Received: " << message << std::endl;
         socket.send_to(asio::buffer(buffer, bytes_received), sender_endpoint);
     }
-    
+
     return 0;
 }
